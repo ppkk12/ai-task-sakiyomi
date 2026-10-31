@@ -50,6 +50,10 @@ export interface Prediction {
 
 export type EngineId = "heuristic" | "gemini" | "openrouter" | "groq";
 
+/**
+ * タスク予測の実行結果
+ * 採用された判定エンジンの予測データと、実行時のモデル名やフォールバック発生理由を格納する
+ */
 export interface EngineResult {
   prediction: Prediction;
   engine: EngineId;
@@ -69,6 +73,10 @@ export interface PcSpec {
   ramGb: number;
 }
 
+/**
+ * アプリケーションの共通設定
+ * 優先判定エンジン、各種AIサービスのAPIキーと指定モデル、および試算用USD/JPY為替レートを保持する
+ */
 export interface Settings {
   engine: EngineId;
   keys: { gemini: string; openrouter: string; groq: string };
