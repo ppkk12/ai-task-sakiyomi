@@ -116,6 +116,12 @@ export interface Recommendation {
   alternative: { row: Row; timeRatio: number; costRatio: number; costLabel: "コスト" | "枠消費" } | null;
 }
 
+/**
+ * 契約済みプランの中からスコア最良の組み合わせを決定し、未契約で大幅な改善が見込める乗り換え候補を抽出する。
+ *
+ * @param rows 計算済みの評価行リスト。契約済みプランを含まない場合はいずれも null を返す
+ * @returns 契約済みの最良行と、大幅改善を満たす未契約候補
+ */
 export function recommend(rows: Row[]): Recommendation {
   const ownedRows = rows.filter((r) => r.owned).sort((a, b) => a.score - b.score);
   const best = ownedRows[0] ?? null;
@@ -153,6 +159,13 @@ export function representativeRows(rows: Row[]): Row[] {
   return [...groups.values()].map(pickRoute);
 }
 
+/**
+ * 同一モデル・同一推論レベルのプラン候補から、代表行を1件選定する。
+ * 契約済み（最小スコア）→ ウィンドウ枠内（100%以下）の月額最安サブスク → 従量課金の順に選択する。
+ *
+ * @param group 同一モデル・推論レベルに属する評価行の配列
+ * @returns 優先条件を満たす代表評価行
+ */
 function pickRoute(group: Row[]): Row {
   const owned = group.filter((r) => r.owned);
   if (owned.length) return owned.reduce((a, b) => (b.score < a.score ? b : a));
