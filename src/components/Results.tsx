@@ -11,6 +11,14 @@ const WINDOWS: WindowKey[] = ["fiveHour", "weekly", "monthly"];
 const PAGE = 12;
 type SortKey = "score" | "time" | "cost" | "window";
 
+/**
+ * 試算結果に基づき最適なモデル提案・タスク予測・各モデル比較表を表示するコンポーネント。
+ *
+ * @param result LLMによるタスク見積もり結果
+ * @param owned ユーザーが保有するモデル・プラン識別子一覧
+ * @param spec ローカル計算用のPCスペック情報
+ * @param usdJpy 日本円換算用の為替レート（USD/JPY）
+ */
 export function Results({ result, owned, spec, usdJpy }: { result: EngineResult; owned: string[]; spec: PcSpec; usdJpy: number }) {
   const p = result.prediction;
   const rows = useMemo(() => calculate({ prediction: p, owned, spec, usdJpy }), [p, owned, spec, usdJpy]);
@@ -153,6 +161,13 @@ function Info({ k, v }: { k: string; v: string }) {
   );
 }
 
+/**
+ * 全モデルの計算結果をソートやフィルター条件に応じてテーブル表示するコンポーネント。
+ *
+ * @param rows 算出された各モデルの試算結果一覧
+ * @param usdJpy 日本円換算用の為替レート（USD/JPY）
+ * @param bestKey 最適と判定されたモデル・プランの識別キー
+ */
 function CompareTable({ rows, usdJpy, bestKey }: { rows: Row[]; usdJpy: number; bestKey?: string }) {
   const [ownedOnly, setOwnedOnly] = useState(false);
   const [allPlans, setAllPlans] = useState(false);
